@@ -1,0 +1,374 @@
+import pygame
+import random
+
+
+#----------------------------------------------------------------------------------------------------------------------
+                                          #Setup
+#----------------------------------------------------------------------------------------------------------------------
+pygame.init()
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+clock = pygame.time.Clock()
+running = True
+width,height = screen.get_size()
+folder_directory = "" # To be filled later
+
+
+# Colors
+faded_green = (0,100,0)
+bg_green =  (0,5,0)
+words_color = (31,255,64)
+
+# Surfaces
+crt_lines_surface = pygame.Surface((width,height), pygame.SRCALPHA)
+glow_surface = pygame.Surface((width,height))
+glow_surface.fill((0,40,0))
+
+# Fonts
+text_font = pygame.font.Font("FSEX300.ttf", int(height*0.04))
+char_width, char_height = text_font.size("A")
+
+# Game stats
+attempts_remaining = 4
+
+
+# Text Generation Variables
+symbols = "<>[]{}()!@#$%^&*()_+-=/?"
+left_col_words = []
+right_col_words = []
+L_addresses = []
+R_addresses = []
+
+# Left Column: Starting X and Y coords for the first char 
+L_col_x_start = width*0.2
+L_col_y_start = height* (1/25 + 0.195)
+
+R_col_x_start = width*0.56
+R_col_y_start = height* (1/25 + 0.195)
+
+
+line_spacing = height/25
+
+left_hitbox = pygame.Rect(L_col_x_start, L_col_y_start, char_width * 12, line_spacing * 16)
+right_hitbox = pygame.Rect(R_col_x_start, R_col_y_start, char_width * 12, line_spacing * 16)
+
+
+#----------------------------------------------------------------------------------------------------------------------
+                                          #Display Methods
+#----------------------------------------------------------------------------------------------------------------------
+
+def _add_crt_effect(screen):
+    for y in range(0,height,4):
+        pygame.draw.line(crt_lines_surface, (0, 20, 0, 80), (0, y), (width, y))
+    
+    screen.blit(crt_lines_surface, (0, 0))
+
+
+def _terminal_effects(screen):    
+    # Apply the CRT lines
+    screen.blit(crt_lines_surface,(0,0))
+    # Add a glow effect
+    screen.blit(glow_surface, (0,0), special_flags=pygame.BLEND_RGB_ADD)
+
+def renderText(text,font,color,relative_x,relative_y,center = True):
+
+    text_surface = font.render(text,True,color)
+    
+    pos_x = width * relative_x
+    pos_y = height * relative_y
+
+    text_rect = text_surface.get_rect()
+
+    if center:
+        text_rect.center = (pos_x, pos_y)
+    else:
+        text_rect.topleft = (pos_x, pos_y)
+        
+    screen.blit(text_surface, text_rect)
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------
+                                          #Backend Methods
+#----------------------------------------------------------------------------------------------------------------------
+
+def _random_grid_symbols():
+    """
+    Generates 16 strings of length 12, of random symbols
+    To be used to inject words for each column, at random
+
+    """
+    global left_col_words, right_col_words
+
+    left_col_words = [''.join(random.choices(symbols,k=12)) for i in range(16)]
+    right_col_words = [''.join(random.choices(symbols,k=12)) for i in range(16)]
+
+
+
+def _word_injection():
+
+    """
+    Injects words into a randomly generated block of symbols above
+    """
+    global left_col_words, right_col_words
+    already_injected = []
+    
+    with open("D:\Coding Projects\Fallout - Revisioned\wordbank.txt") as file:
+        words = [words.strip() for words in file]
+        
+    # Generate a random word for a random line
+    for line in range(16):
+
+        L_generate_word = bool(random.randint(0,1))
+        R_generate_word = bool(random.randint(0,1))
+
+
+        # Word generation for left side
+        if L_generate_word:
+            L_random_start_index = random.randint(0,11)
+        
+            L_max_word_size = 11-L_random_start_index
+           
+            # Filter words that cannot be injected, then randomly choose from them
+            L_word_filter = [w for w in words if (len(w) <= L_max_word_size) and (w not in already_injected)]
+           
+            # Inject into left side
+            if L_word_filter:
+                injected_word = random.choice(L_word_filter)
+                already_injected.append(injected_word)               
+
+               
+                substring_to_replace = left_col_words[line][L_random_start_index:L_random_start_index + len(injected_word)]
+                new_string = left_col_words[line].replace(substring_to_replace,injected_word)
+                left_col_words[line] = new_string
+
+           
+
+            if R_generate_word:
+        
+                R_random_start_index = random.randint(0,11)
+                R_max_word_size = 11-R_random_start_index
+
+                # Filter words that cannot be injected, then randomly choose from them
+                R_word_filter = [w for w in words if (len(w) <= R_max_word_size) and (w not in already_injected)]
+
+                # Inject into right side
+                
+                if R_word_filter:
+                    injected_word = random.choice(R_word_filter)
+                    already_injected.append(injected_word)               
+
+                
+                    substring_to_replace = right_col_words[line][R_random_start_index:R_random_start_index + len(injected_word)]
+                    new_string = right_col_words[line].replace(substring_to_replace,injected_word)
+                    right_col_words[line] = new_string
+                
+
+def _hexadecimal_address():
+        start_address = random.randint(0x1000,0xF000)
+        global L_addresses, R_addresses
+
+        for i in range(32):
+
+            address_generated = start_address + random.randint(12,48)
+            string_val =  f"0x{address_generated:04X}"
+
+            if i < 16:
+                L_addresses.append(string_val)
+            else:
+                R_addresses.append(string_val)
+
+
+            
+
+def _pixel_pos_to_indices(mouse_x,mouse_y, x_start,y_start):
+
+    #left column
+    
+    """
+    Stats to consider
+
+    height = 1920
+    width = 1080
+
+    first char of first col: 
+    L_col_x_start = width*0.2
+    L_col_y_start = height* (1/25 + 0.195)
+    
+
+    last char of first col (the diagnonal corners): 
+    x = width*0.1
+    y = height* (17/25 + 0.195)
+
+    width of a char 
+    Create a rectangle based on that for mouse detection
+    Get coords and translate based on all this information
+
+
+    Rectangle coordinates:
+    top left
+    top right
+    bottom left
+    bottom right:
+
+    translate (x,y) -> (row,col) using start stats
+
+    mouse_x = L_col_x_start + (j*char_width)
+    j = int((mouse_x - L_col_x_start) / char_width)
+    
+    mouse_y = L_col_y_start + height*(i/25 + 0.195)
+    mouse_y - L_col_y_start = height*(i/25 + 0.195)
+
+    i = int(25*((mouse_y - L_col_y_start)/(height)) - 0.195)
+
+
+
+
+
+
+    My version:
+    mouse_x = L_col_x_start + height(j/25 + 0.195)
+    j = int((mouse_x - L_col_x_start) / char_width)
+
+    
+    
+    i = int(25*((mouse_y - L_col_y_start)/(height)) - 0.195)
+    j = int((mouse_x - L_col_x_start) / char_width)
+
+    """
+
+    global height, width
+   
+
+    i = int(25*((mouse_y - y_start)/(height)) - 0.195)
+    j = int((mouse_x - x_start) / char_width)
+
+
+    if (i >= 0 and i < 16) and (j >= 0 and j < 16):
+        print(left_col_words[i][j])
+        #print(i,j)
+
+    return (i,j)
+
+
+
+
+
+def _find_word():
+    """
+    If a char is found, look both ways to find the whole word
+    """
+
+
+            
+            
+            
+            
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#----------------------------------------------------------------------------------------------------------------------
+                                          #Main
+#----------------------------------------------------------------------------------------------------------------------
+
+# Draw the lines before running else they get drawn 60 times a second (performance)
+_add_crt_effect(screen)
+
+# Generate words
+_random_grid_symbols()
+_word_injection()
+
+# Generate addresses
+_hexadecimal_address()
+
+
+while running:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Apply screen effects and then add text
+    screen.fill(bg_green)
+    _terminal_effects(screen)
+
+
+
+    # Introductory text
+    renderText("ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL", text_font, words_color, 0.01, 0.05, center=False)
+    renderText("ENTER PASSWORD NOW", text_font, words_color, 0.01, 0.085, center=False)
+    renderText("{} ATTEMPT(S) LEFT: ".format(attempts_remaining) + "[]"*attempts_remaining, text_font, words_color, 0.01, 0.145, center=False)
+
+    # Left Column and Addresses
+    
+
+    for i in range(16):
+        renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, center=False)
+        renderText(L_addresses[i], text_font, words_color, 0.1, (i+1)/25 + 0.195, center=False)
+
+    
+    # Right Column and Addresses
+    for i in range(16):
+        renderText(right_col_words[i], text_font, words_color, 0.56, (i+1)/25 + 0.195, center=False)
+        renderText(R_addresses[i], text_font, words_color, 0.46, (i+1)/25 + 0.195, center=False)
+
+
+
+
+
+    # Mouse checking only when hovering around the two columns (use colliders)
+    mouse_pos = pygame.mouse.get_pos()
+
+    if(left_hitbox.collidepoint(mouse_pos)):
+         
+         mouse_x = mouse_pos[0]
+         mouse_y = mouse_pos[1]
+
+         X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, L_col_x_start,L_col_y_start)
+
+         renderText(left_col_words[X][Y], text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
+    
+
+    if(right_hitbox.collidepoint(mouse_pos)):
+         
+         mouse_x = mouse_pos[0]
+         mouse_y = mouse_pos[1]
+
+         X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, L_col_x_start,L_col_y_start)
+
+         renderText(left_col_words[X][Y], text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
+    
+
+  
+
+
+
+    pygame.display.flip()
+    clock.tick(60)
+
+
+
+
+pygame.quit()
+
+
+
+
+
