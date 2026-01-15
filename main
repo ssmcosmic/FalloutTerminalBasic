@@ -33,11 +33,16 @@ target = "" # The correct word
 
 
 # Text Generation Variables
-symbols = "<>[]{}()!@#$%^&*()_+-=/?"
+symbols = "[]{}()!@#$%^&*()_+-=/?"
 left_col_words = []
 right_col_words = []
 L_addresses = []
 R_addresses = []
+logs = [] # log of clicks made, later improvement: track indices not elements, since eg. ) can be in multiple indices
+
+L_word_rows_indices = {} # dictionary of (row,word) for the left column where there is a word, used to remove duds
+R_word_rows_indices = {}
+
 
 # Left Column: Starting X and Y coords for the first char 
 L_col_x_start = width*0.2
@@ -144,6 +149,8 @@ def _word_injection():
                 new_string = left_col_words[line].replace(substring_to_replace,injected_word)
                 left_col_words[line] = new_string
 
+                L_word_rows_indices[line] = injected_word
+
            
 
             if R_generate_word:
@@ -164,6 +171,8 @@ def _word_injection():
                     substring_to_replace = right_col_words[line][R_random_start_index:R_random_start_index + len(injected_word)]
                     new_string = right_col_words[line].replace(substring_to_replace,injected_word)
                     right_col_words[line] = new_string
+
+                    R_word_rows_indices[line] = injected_word
 
             target = random.choice(already_injected)
                 
@@ -287,6 +296,76 @@ def _find_word(character,row,col,word_list):
         
         
 
+def _remove_dud():
+    """
+    If a pair of brackets is found, this method is triggered
+    Remove one incorrect word from either column, replaced with symbols
+
+    column_choice:
+        0 -> left column
+        1 -> right column
+
+    L_word_rows_indices -> [(row,word)]
+
+    
+    Find a 
+
+    """
+    global L_word_rows_indices, R_word_rows_indices
+    global left_col_words, right_col_words
+    
+    rows_tried = []
+
+    column_choice = random.randint(0,1) 
+
+    # Left side
+    if(column_choice == 0):
+
+        random_row = random.randint(0,15)
+        rows_tried.append(random_row)
+        
+        while random_row not in L_word_rows_indices.keys and random_row in rows_tried or L_word_rows_indices[random_row] == target:
+            random_row = random.randint(0,15)
+            
+            if random_row in L_word_rows_indices.keys:
+                break
+            
+            rows_tried.append(random_row)
+    
+
+        left_col_words[random_row] = ''.join(random.choices(symbols,k=12))
+        
+    
+     # Right side
+
+    rows_tried = []
+    if(column_choice == 1):
+
+        random_row = random.randint(0,15)
+        rows_tried.append(random_row)
+        
+        while random_row not in R_word_rows_indices.keys and random_row in rows_tried or R_word_rows_indices[random_row] == target:
+            random_row = random.randint(0,15)
+            
+            if random_row in R_word_rows_indices.keys:
+                break
+            
+            rows_tried.append(random_row)
+    
+
+        right_col_words[random_row] = ''.join(random.choices(symbols,k=12))
+
+
+
+        
+
+
+        
+
+
+def _reset_tries():
+    global attempts_remaining
+    attempts_remaining = 4
 
 
             
@@ -378,7 +457,21 @@ while running:
          display_text = _find_word(display_text,X,Y,left_col_words)
 
 
-         renderText(display_text, text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
+         renderText('>'+display_text, text_font, words_color, 0.86, (16)/25 + 0.195, center=False)
+        
+
+         # Add to logs and then we display all logs outside of the two checks
+         if event.type == pygame.MOUSEBUTTONDOWN:
+
+            if display_text == target:
+             pass # DO SOMETHING LATER!!!
+
+
+             if display_text in logs:
+                 pass
+             else:
+                 logs.append(display_text)
+
     
 
     if(right_hitbox.collidepoint(mouse_pos)):
@@ -395,7 +488,28 @@ while running:
          display_text = _find_word(display_text,X,Y,right_col_words)
 
 
-         renderText(display_text, text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
+         renderText('>'+display_text, text_font, words_color, 0.86, (16)/25 + 0.195, center=False)
+
+          # Add to logs and then we display all logs outside of the two checks
+         if event.type == pygame.MOUSEBUTTONDOWN:
+            
+            if display_text == target:
+             pass # DO SOMETHING LATER!!!
+
+
+             if display_text in logs:
+                 pass
+             else:
+                 logs.append(display_text)
+
+    
+
+    # Need to keep log size constant, eliminate the oldest entry when almost full
+    for index,entry in enumerate(logs[::-1]):
+         renderText('>'+entry, text_font, words_color, 0.86, (15-index)/25 + 0.185, center=False)
+
+    if len(logs) > 15:
+        del logs[0]
     
   
 
