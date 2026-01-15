@@ -29,6 +29,7 @@ char_width, char_height = text_font.size("A")
 
 # Game stats
 attempts_remaining = 4
+target = "" # The correct word
 
 
 # Text Generation Variables
@@ -109,7 +110,7 @@ def _random_grid_symbols():
 def _word_injection():
 
     """
-    Injects words into a randomly generated block of symbols above
+    Injects words into a randomly generated block of symbols above and also chooses a random word as target
     """
     global left_col_words, right_col_words
     already_injected = []
@@ -163,6 +164,8 @@ def _word_injection():
                     substring_to_replace = right_col_words[line][R_random_start_index:R_random_start_index + len(injected_word)]
                     new_string = right_col_words[line].replace(substring_to_replace,injected_word)
                     right_col_words[line] = new_string
+
+            target = random.choice(already_injected)
                 
 
 def _hexadecimal_address():
@@ -243,22 +246,47 @@ def _pixel_pos_to_indices(mouse_x,mouse_y, x_start,y_start):
 
     i = int(25*((mouse_y - y_start)/(height)) - 0.195)
     j = int((mouse_x - x_start) / char_width)
-
-
-    if (i >= 0 and i < 16) and (j >= 0 and j < 16):
-        print(left_col_words[i][j])
-        #print(i,j)
-
     return (i,j)
 
 
 
 
 
-def _find_word():
+def _find_word(character,row,col,word_list):
     """
-    If a char is found, look both ways to find the whole word
+    If a alphachar is found, look both ways to find the whole word by building it piece by piece
+
+    character -> Any char the mouse hovers over
+    X -> The row pos of the char
+    Y -> The col pos of the char
     """
+
+    formed_word = ""
+   
+    if character.isalpha():
+        
+        # Find start of string and go forward, keeping the boundaries in check
+
+        if(col == 0):
+            pass
+        else:
+            while word_list[row][col-1].isalpha() and col >= 0:
+                col -= 1
+        
+        # Now build forward
+        while word_list[row][col+1].isalpha() and col < 12:
+                formed_word += word_list[row][col]
+                col += 1
+        
+        formed_word += word_list[row][col]
+
+   
+        return formed_word
+    else:
+        return character
+        
+        
+
 
 
             
@@ -343,7 +371,14 @@ while running:
 
          X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, L_col_x_start,L_col_y_start)
 
-         renderText(left_col_words[X][Y], text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
+
+         # Display text as it is hovered over
+         
+         display_text = left_col_words[X][Y]
+         display_text = _find_word(display_text,X,Y,left_col_words)
+
+
+         renderText(display_text, text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
     
 
     if(right_hitbox.collidepoint(mouse_pos)):
@@ -351,11 +386,17 @@ while running:
          mouse_x = mouse_pos[0]
          mouse_y = mouse_pos[1]
 
-         X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, L_col_x_start,L_col_y_start)
+         X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, R_col_x_start,R_col_y_start)
 
-         renderText(left_col_words[X][Y], text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
+
+         # Display text as it is hovered over
+         
+         display_text = right_col_words[X][Y]
+         display_text = _find_word(display_text,X,Y,right_col_words)
+
+
+         renderText(display_text, text_font, words_color, 0.86, (i+1)/25 + 0.195, center=False)
     
-
   
 
 
