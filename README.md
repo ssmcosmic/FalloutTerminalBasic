@@ -64,11 +64,11 @@ height = the height of the screen. We are using relative pixel values which is w
 
 Finally, leaving us with:
 
-*row = int(25*((mouse_y - y_start)/(height)) - 0.195) <br>
-*col = int((mouse_x - x_start) / char_width)
+row = int(25*((mouse_y - y_start)/(height)) - 0.195)<br>
+col = int((mouse_x - x_start) / char_width)
 
 For each column i.e left_col_words and right_col_words. To visualize the column:
-<img width="337" height="726" alt="image" src="https://github.com/user-attachments/assets/03eef363-0052-488d-9245-179e586e809f" />
+<img  align = "left" width="337" height="726" alt="image" src="https://github.com/user-attachments/assets/03eef363-0052-488d-9245-179e586e809f" />
 
 
 
