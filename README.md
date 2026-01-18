@@ -56,7 +56,7 @@ Each next character is a char_width from the previous, so a loop can be used to 
 **Now consider the mouse y coordinate obtained when we hover over the first character:**
 
 
-mouse_y = L_col_y_start + height*(i/25 + 0.195)
+mouse_y = L_col_y_start + height*(i/25 + 0.195)<br>
 i = int(25*((mouse_y - L_col_y_start)/(height)) - 0.195)
 
 L_col_y_start = The first Y value = 1/25 + 0.195. Every other character is an offset of this value <br>
