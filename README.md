@@ -37,7 +37,7 @@ The program displays according to the resolution of the screen, so that resizing
 
 Recall: def renderText(text,font,color,relative_x,relative_y,center = True):
 
-In line 497:
+In line 497: <br>
 renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, center=False)
 
 The first character is rendered at (X,Y) = (0.2, (0+1)/25 + 0.195) when i = 0
@@ -47,9 +47,9 @@ The first character is rendered at (X,Y) = (0.2, (0+1)/25 + 0.195) when i = 0
 mouse_x = L_col_x_start + (j*char_width)
 j = int((mouse_x - L_col_x_start) / char_width)
 
-L_col_x_start = The first X value = 0.2. Every other character is an offset of this value
+L_col_x_start = The first X value = 0.2. Every other character is an offset of this value <br>
 j = column value
-char_width = obtained from the font used
+char_width = obtained from the font used <br>
 Each next character is a char_width from the previous, so a loop can be used to obtain the next character from the current one
 
 
@@ -59,7 +59,7 @@ Each next character is a char_width from the previous, so a loop can be used to 
 mouse_y = L_col_y_start + height*(i/25 + 0.195)
 i = int(25*((mouse_y - L_col_y_start)/(height)) - 0.195)
 
-L_col_y_start = The first Y value = 1/25 + 0.195. Every other character is an offset of this value
+L_col_y_start = The first Y value = 1/25 + 0.195. Every other character is an offset of this value <br>
 height = the height of the screen. We are using relative pixel values which is why we need to multiply the Y value with height (since that is how the pixel is rendered in this program)
 
 Finally, leaving us with:
