@@ -6,7 +6,7 @@
 
 I found the Fallout game series to be super fun after initially dropping it and restarting years later. In every game, there was always this aspect of terminal hacking that I quite enjoyed, and I wondered whether I could implement a basic version of the terminal. Similar to how I had dropped Fallout 4 the first time I played it, I had also dropped this project, until now.
 
-This project is a work-in-progress, and for now, aims to implement the most basic version of the terminal. I aim to improve and add more features in later versions.
+This project is a work-in-progress, and for now, aims to implement the most basic version of the terminal. I aim to improve and add more features in later versions. There's gonna be a lot of bugs and the program does not really do anything once the target is found yet, but I'll probably add more later on.
 
 
 
