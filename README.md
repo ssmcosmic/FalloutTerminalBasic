@@ -24,17 +24,16 @@ The program basically splits of words generated into two columns (left and right
 Operations on each column are the same; each column is represented as a 2D array (each row is a string so that individiual characters can be accessed).
 The program displays according to the resolution of the screen, so that resizing should generally not cause any issues and it helps with pixel calculations
 
-Here's how the program identifies words and symbol pairs:
+**Here's how the program identifies words and symbol pairs:**
 
-Create a rectangle for each column within which mouse inputs are registered
-Map each pixel within the rectangle to an index corresponding to the 2D array. It sounds complicated but this is achieved with two lines by doing some smart math:
+1. Create a rectangle for each column within which mouse inputs are registered
+2. Map each pixel within the rectangle to an index corresponding to the 2D array. It sounds complicated but this is achieved with two lines by doing some smart math:
 
-i = int(25*((mouse_y - y_start)/(height)) - 0.195)
-j = int((mouse_x - x_start) / char_width)
+*i = int(25*((mouse_y - y_start)/(height)) - 0.195)
+*j = int((mouse_x - x_start) / char_width)
+*i,j = row,col
 
-i,j = row,col
-
-How is this derived? Within any rectangle, since we are looking at a 2D array, the first character should be at index (0,0) for the relevant column. Consider the pixel positions when the text was rendered in the left column:
+**How is this derived? Within any rectangle, since we are looking at a 2D array, the first character should be at index (0,0) for the relevant column. Consider the pixel positions when the text was rendered in the left column:**
 
 Recall: def renderText(text,font,color,relative_x,relative_y,center = True):
 
@@ -43,7 +42,7 @@ renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, cen
 
 The first character is rendered at (X,Y) = (0.2, (0+1)/25 + 0.195) when i = 0
 
-Consider the mouse x coordinate obtained when we hover over the first character:
+**Consider the mouse x coordinate obtained when we hover over the first character:**
 
 mouse_x = L_col_x_start + (j*char_width)
 j = int((mouse_x - L_col_x_start) / char_width)
@@ -54,7 +53,7 @@ char_width = obtained from the font used
 Each next character is a char_width from the previous, so a loop can be used to obtain the next character from the current one
 
 
-Now consider the mouse y coordinate obtained when we hover over the first character:
+**Now consider the mouse y coordinate obtained when we hover over the first character:**
 
 
 mouse_y = L_col_y_start + height*(i/25 + 0.195)
