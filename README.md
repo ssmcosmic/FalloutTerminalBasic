@@ -10,4 +10,6 @@ This project is a work-in-progress, and for now, aims to implement the most basi
 
 <img width="372" height="100" alt="ascii-art-text" src="https://github.com/user-attachments/assets/2c7f1a55-378a-449e-ba5e-d7592cc91aba" />
           
-┌────────┬─────────┐ │ Python │ 3.14.0 │ ├────────┼─────────┤ │ Py-ce │ 2.5.6 │ └────────┴─────────┘
+pygame-ce: 2.5.6
+
+python: 3.14.0
