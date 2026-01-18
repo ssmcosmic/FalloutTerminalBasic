@@ -70,8 +70,8 @@ col = int((mouse_x - x_start) / char_width)
 For each column i.e left_col_words and right_col_words.
 
 <img width="458" height="100" alt="ascii-art-text (4)" src="https://github.com/user-attachments/assets/d4a242ba-3e73-4ace-9d3a-fb865a8ef918" />
-1. Add audio (background and when hovering / clicking)
-2. Add a green box over hovered characters and words
+1. Add audio (background and when hovering / clicking) <br>
+2. Add a green box over hovered characters and words <br>
 3. Upon finding the correct word, lead to a different screen
 
 
