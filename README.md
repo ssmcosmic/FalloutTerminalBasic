@@ -48,10 +48,31 @@ Consider the mouse x coordinate obtained when we hover over the first character:
 mouse_x = L_col_x_start + (j*char_width)
 j = int((mouse_x - L_col_x_start) / char_width)
 
-L_col_x_start = The first X value. Every other character is an offset of this value
+L_col_x_start = The first X value = 0.2. Every other character is an offset of this value
 j = column value
 char_width = obtained from the font used
 Each next character is a char_width from the previous, so a loop can be used to obtain the next character from the current one
+
+
+Now consider the mouse y coordinate obtained when we hover over the first character:
+
+
+mouse_y = L_col_y_start + height*(i/25 + 0.195)
+i = int(25*((mouse_y - L_col_y_start)/(height)) - 0.195)
+
+L_col_y_start = The first Y value = 1/25 + 0.195. Every other character is an offset of this value
+height = the height of the screen. We are using relative pixel values which is why we need to multiply the Y value with height (since that is how the pixel is rendered in this program)
+
+Finally, leaving us with:
+
+row = int(25*((mouse_y - y_start)/(height)) - 0.195)
+col = int((mouse_x - x_start) / char_width)
+
+For each column i.e left_col_words and right_col_words. To visualize the column:
+<img width="337" height="726" alt="image" src="https://github.com/user-attachments/assets/03eef363-0052-488d-9245-179e586e809f" />
+
+
+
 
 
 
