@@ -8,6 +8,19 @@ I found the Fallout game series to be super fun after initially dropping it and 
 
 This project is a work-in-progress, and for now, aims to implement the most basic version of the terminal. I aim to improve and add more features in later versions.
 
+
+
+<img width="544" height="100" alt="ascii-art-text (2)" src="https://github.com/user-attachments/assets/52e10ab3-6d35-414a-9cda-c94bdf80ab22" />
+
+1) Store the main.py file and the wordbank.txt in the same folder
+2) Change the folder directory inside main.py to the folder in step 1
+3) Ensure the versions match those below (the program might still work but is not guaranteed)
+4) The program should now run
+
+
+
+
+
 <img width="372" height="100" alt="ascii-art-text" src="https://github.com/user-attachments/assets/2c7f1a55-378a-449e-ba5e-d7592cc91aba" />
           
 pygame-ce: 2.5.6
