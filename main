@@ -10,7 +10,7 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 running = True
 width,height = screen.get_size()
-folder_directory = "" # To be filled later
+folder_directory = "D:\Coding Projects\Fallout - Revisioned\wordbank.txt" # Change to wherever the wordbank is stored
 
 
 # Colors
@@ -30,10 +30,11 @@ char_width, char_height = text_font.size("A")
 # Game stats
 attempts_remaining = 4
 target = "" # The correct word
+take_input = True # Only take input if word not found
 
 
 # Text Generation Variables
-symbols = "[]{}()!@#$%^&*()_+-=/?"
+symbols = "[]{}()!@#$%^&*_+-=/?"
 left_col_words = []
 right_col_words = []
 L_addresses = []
@@ -57,6 +58,13 @@ line_spacing = height/25
 left_hitbox = pygame.Rect(L_col_x_start, L_col_y_start, char_width * 12, line_spacing * 16)
 right_hitbox = pygame.Rect(R_col_x_start, R_col_y_start, char_width * 12, line_spacing * 16)
 
+
+# Other
+
+open_brackets = ['[', '(', '{' ]
+closed_brackets = [']', ')','}']
+L_pair_found_indices = []
+R_pair_found_indices = []
 
 #----------------------------------------------------------------------------------------------------------------------
                                           #Display Methods
@@ -117,64 +125,74 @@ def _word_injection():
     """
     Injects words into a randomly generated block of symbols above and also chooses a random word as target
     """
-    global left_col_words, right_col_words
+    global left_col_words, right_col_words,target
     already_injected = []
+    L_rows_added_to = [] # Avoid injecting word to a row already having a word (left col)
+    R_rows_added_to = [] # Avoid injecting word to a row already having a word (right col)
     
-    with open("D:\Coding Projects\Fallout - Revisioned\wordbank.txt") as file:
+    with open(folder_directory) as file:
         words = [words.strip() for words in file]
         
-    # Generate a random word for a random line
-    for line in range(16):
+    # Generate a random word for a random line. Ensure atleast 6 words generated
 
-        L_generate_word = bool(random.randint(0,1))
-        R_generate_word = bool(random.randint(0,1))
+    while len(already_injected) < 10:
+        for line in range(16):
+
+            L_generate_word = bool(random.randint(0,1))
+            R_generate_word = bool(random.randint(0,1))
 
 
-        # Word generation for left side
-        if L_generate_word:
-            L_random_start_index = random.randint(0,11)
-        
-            L_max_word_size = 11-L_random_start_index
-           
-            # Filter words that cannot be injected, then randomly choose from them
-            L_word_filter = [w for w in words if (len(w) <= L_max_word_size) and (w not in already_injected)]
-           
-            # Inject into left side
-            if L_word_filter:
-                injected_word = random.choice(L_word_filter)
-                already_injected.append(injected_word)               
+            # Word generation for left side
+            if L_generate_word and line not in L_rows_added_to:
 
-               
-                substring_to_replace = left_col_words[line][L_random_start_index:L_random_start_index + len(injected_word)]
-                new_string = left_col_words[line].replace(substring_to_replace,injected_word)
-                left_col_words[line] = new_string
-
-                L_word_rows_indices[line] = injected_word
-
-           
-
-            if R_generate_word:
-        
-                R_random_start_index = random.randint(0,11)
-                R_max_word_size = 11-R_random_start_index
-
+                L_rows_added_to.append(line)
+                L_random_start_index = random.randint(0,11)
+            
+                L_max_word_size = 11-L_random_start_index
+            
                 # Filter words that cannot be injected, then randomly choose from them
-                R_word_filter = [w for w in words if (len(w) <= R_max_word_size) and (w not in already_injected)]
-
-                # Inject into right side
-                
-                if R_word_filter:
-                    injected_word = random.choice(R_word_filter)
+                L_word_filter = [w for w in words if (len(w) <= L_max_word_size) and (w not in already_injected)]
+            
+                # Inject into left side
+                if L_word_filter:
+                    injected_word = random.choice(L_word_filter)
                     already_injected.append(injected_word)               
 
                 
-                    substring_to_replace = right_col_words[line][R_random_start_index:R_random_start_index + len(injected_word)]
-                    new_string = right_col_words[line].replace(substring_to_replace,injected_word)
-                    right_col_words[line] = new_string
+                    substring_to_replace = left_col_words[line][L_random_start_index:L_random_start_index + len(injected_word)]
+                    new_string = left_col_words[line].replace(substring_to_replace,injected_word)
+                    left_col_words[line] = new_string
 
-                    R_word_rows_indices[line] = injected_word
+                    L_word_rows_indices[line] = injected_word
 
-            target = random.choice(already_injected)
+            
+
+                if R_generate_word and line not in R_rows_added_to:
+
+                    R_rows_added_to.append(line)
+            
+                    R_random_start_index = random.randint(0,11)
+                    R_max_word_size = 11-R_random_start_index
+
+                    # Filter words that cannot be injected, then randomly choose from them
+                    R_word_filter = [w for w in words if (len(w) <= R_max_word_size) and (w not in already_injected)]
+
+                    # Inject into right side
+                    
+                    if R_word_filter:
+                        injected_word = random.choice(R_word_filter)
+                        already_injected.append(injected_word)               
+
+                    
+                        substring_to_replace = right_col_words[line][R_random_start_index:R_random_start_index + len(injected_word)]
+                        new_string = right_col_words[line].replace(substring_to_replace,injected_word)
+                        right_col_words[line] = new_string
+
+                        R_word_rows_indices[line] = injected_word
+
+      
+        target = random.choice(already_injected)
+       
                 
 
 def _hexadecimal_address():
@@ -310,11 +328,14 @@ def _remove_dud():
     
     Find a 
 
+    Make sure the same pair cannot be selected again
+
     """
     global L_word_rows_indices, R_word_rows_indices
     global left_col_words, right_col_words
     
     rows_tried = []
+    sequence = ""
 
     column_choice = random.randint(0,1) 
 
@@ -324,16 +345,27 @@ def _remove_dud():
         random_row = random.randint(0,15)
         rows_tried.append(random_row)
         
-        while random_row not in L_word_rows_indices.keys and random_row in rows_tried or L_word_rows_indices[random_row] == target:
+        while random_row not in L_word_rows_indices.keys() and random_row in rows_tried or L_word_rows_indices[random_row] == target:
             random_row = random.randint(0,15)
             
-            if random_row in L_word_rows_indices.keys:
+            if random_row in L_word_rows_indices.keys():
                 break
             
             rows_tried.append(random_row)
     
 
-        left_col_words[random_row] = ''.join(random.choices(symbols,k=12))
+        # Replace word with ....
+
+        for c in range(12):
+            if left_col_words[random_row][c].isalpha():
+                sequence += "."
+            else:
+                sequence += left_col_words[random_row][c]
+        
+        left_col_words[random_row] = sequence
+
+
+        
         
     
      # Right side
@@ -344,16 +376,24 @@ def _remove_dud():
         random_row = random.randint(0,15)
         rows_tried.append(random_row)
         
-        while random_row not in R_word_rows_indices.keys and random_row in rows_tried or R_word_rows_indices[random_row] == target:
+        while random_row not in R_word_rows_indices.keys() and random_row in rows_tried or R_word_rows_indices[random_row] == target:
             random_row = random.randint(0,15)
             
-            if random_row in R_word_rows_indices.keys:
+            if random_row in R_word_rows_indices.keys():
                 break
             
             rows_tried.append(random_row)
     
 
-        right_col_words[random_row] = ''.join(random.choices(symbols,k=12))
+         # Replace word with ....
+
+        for c in range(12):
+            if right_col_words[random_row][c].isalpha():
+                sequence += "."
+            else:
+                sequence += right_col_words[random_row][c]
+
+        right_col_words[random_row] = sequence
 
 
 
@@ -369,20 +409,47 @@ def _reset_tries():
 
 
             
-            
-            
-            
+def _search_pairs(row,col,word_list):
+    """
+    Search pairs of brackets if hovered char is not an alphachar
+    Search carried from 
+    Once a pair is found, generate a number between 0,1
+    0 -> remove dud
+    1 -> reset tries
 
+    Returns a pair of (action,sequence) where action = 0 (remove dud), 1 (reset tries), -1 (no pair found), and sequence = the sequence between the bracket pair
+    """
 
+    global open_brackets, closed_brackets
+    char = word_list[row][col]
+    bracket_index = -1
+    sequence =  word_list[row][col]
 
+    if char.isalpha() == False: 
+        # Check if open bracket. Store the corresponding index of the closed bracket
+        for index,bracket in enumerate(open_brackets):
+            if char == bracket:
+                bracket_index = index
         
+        if bracket_index == -1:
+               return (-1,"NO PAIRS")
+           
+        # Now look through the line until the first closed bracket is found
+        for s in range(col + 1,12):
+            sequence += word_list[row][s]
+            
 
+            if word_list[row][s] == closed_brackets[bracket_index]:
 
+                choice = random.randint(0,1)
 
+                if(choice == 0):
+                    return(0,sequence)
+                elif(choice == 1):
+                    return (1,sequence)
 
-
-
-
+            
+    return (-1,"NO PAIRS") 
 
 
 
@@ -416,7 +483,7 @@ while running:
     screen.fill(bg_green)
     _terminal_effects(screen)
 
-
+    
 
     # Introductory text
     renderText("ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL", text_font, words_color, 0.01, 0.05, center=False)
@@ -443,70 +510,154 @@ while running:
     # Mouse checking only when hovering around the two columns (use colliders)
     mouse_pos = pygame.mouse.get_pos()
 
-    if(left_hitbox.collidepoint(mouse_pos)):
-         
-         mouse_x = mouse_pos[0]
-         mouse_y = mouse_pos[1]
+    if(attempts_remaining == 0):
+        if "Out of tries!" not in logs:
+            logs.append("Out of tries!")
+    else:
 
-         X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, L_col_x_start,L_col_y_start)
+        if(left_hitbox.collidepoint(mouse_pos)):
+            
+            mouse_x = mouse_pos[0]
+            mouse_y = mouse_pos[1]
+
+            X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, L_col_x_start,L_col_y_start)
 
 
-         # Display text as it is hovered over
-         
-         display_text = left_col_words[X][Y]
-         display_text = _find_word(display_text,X,Y,left_col_words)
+            # Display text as it is hovered over
+            
+            display_text = left_col_words[X][Y]
+            display_text = _find_word(display_text,X,Y,left_col_words)
+            pair_found = _search_pairs(X,Y,left_col_words)
+            
+            # If a pair of brackets is found, display the sequence of symbols
+        
+            if pair_found[0] != -1:
+                display_text = pair_found[1]
+                
+                
+
+            renderText('>'+display_text, text_font, words_color, 0.76, (16)/25 + 0.195, center=False)
+            
+
+            # Add to logs and then we display all logs outside of the two checks
+            if event.type == pygame.MOUSEBUTTONDOWN and take_input:
+                
+                            
+                if (pair_found[0] != -1) and (X,Y) not in L_pair_found_indices:
+                    L_pair_found_indices.append((X,Y))
+                    if pair_found[0] == 0:
+                        _remove_dud()
+                        logs.append("Dud removed")
+                        logs.append(pair_found[1])
+                    elif pair_found[0] == 1:
+                        _reset_tries()
+                        logs.append("Tries reset")
+                        logs.append(pair_found[1])
 
 
-         renderText('>'+display_text, text_font, words_color, 0.86, (16)/25 + 0.195, center=False)
+            
+                if display_text in logs:
+                    pass
+                else:
+                    if display_text[0].isalpha() == True:
+                        logs.append(display_text)
+                        attempts_remaining -= 1
+
+                
+                # Will change how to deal with storing only once later
+                if display_text == target:
+
+                    take_input = False
+
+                    if "Exact match!" not in logs:
+                        logs.append("Exact match!")
+                    
+                    if "Please wait" not in logs:
+                        logs.append("Please wait")
+                    
+                    if "while system!" not in logs:
+                        logs.append("while system!")
+
+                    if "is accessed" not in logs:
+                        logs.append("is accessed")
+
         
 
-         # Add to logs and then we display all logs outside of the two checks
-         if event.type == pygame.MOUSEBUTTONDOWN:
-
-            if display_text == target:
-             pass # DO SOMETHING LATER!!!
-
-
-             if display_text in logs:
-                 pass
-             else:
-                 logs.append(display_text)
-
-    
-
-    if(right_hitbox.collidepoint(mouse_pos)):
-         
-         mouse_x = mouse_pos[0]
-         mouse_y = mouse_pos[1]
-
-         X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, R_col_x_start,R_col_y_start)
-
-
-         # Display text as it is hovered over
-         
-         display_text = right_col_words[X][Y]
-         display_text = _find_word(display_text,X,Y,right_col_words)
-
-
-         renderText('>'+display_text, text_font, words_color, 0.86, (16)/25 + 0.195, center=False)
-
-          # Add to logs and then we display all logs outside of the two checks
-         if event.type == pygame.MOUSEBUTTONDOWN:
+        if(right_hitbox.collidepoint(mouse_pos)):
             
-            if display_text == target:
-             pass # DO SOMETHING LATER!!!
+            mouse_x = mouse_pos[0]
+            mouse_y = mouse_pos[1]
+
+            X,Y = _pixel_pos_to_indices(mouse_x,mouse_y, R_col_x_start,R_col_y_start)
 
 
-             if display_text in logs:
-                 pass
-             else:
-                 logs.append(display_text)
+            # Display text as it is hovered over
+            
+            display_text = right_col_words[X][Y]        
+            display_text = _find_word(display_text,X,Y,right_col_words)
+            pair_found = _search_pairs(X,Y,right_col_words)
+
+            # If a pair of brackets is found, display the sequence of symbols
+            if pair_found[0] != -1:
+                display_text = pair_found[1]
+                
+
+            renderText('>'+display_text, text_font, words_color, 0.76, (16)/25 + 0.195, center=False)
+
+            # Add to logs and then we display all logs outside of the two checks
+            if event.type == pygame.MOUSEBUTTONDOWN and take_input:
+
+            
+                    
+                
+                if (pair_found[0] != -1) and (X,Y) not in R_pair_found_indices:
+                    R_pair_found_indices.append((X,Y))
+                    if pair_found[0] == 0:
+                        _remove_dud()
+                        logs.append("Dud removed")
+                    elif pair_found[0] == 1:
+                        _reset_tries()
+                        logs.append("Tries reset")
+
+                
+
+                if display_text in logs:
+                    pass
+                else:
+                    if display_text[0].isalpha() == True:
+                        logs.append(display_text)
+                        attempts_remaining -= 1
+                        
+            
+                # Will change how to deal with storing only once later
+                if display_text == target:
+                    
+                    take_input = False
+
+                    if "Exact match!" not in logs:
+                        logs.append("Exact match!")
+                    
+                    if "Please wait" not in logs:
+                        logs.append("Please wait")
+                    
+                    if "while system!" not in logs:
+                        logs.append("while system!")
+
+                    if "is accessed" not in logs:
+                        logs.append("is accessed")
+
+            
+
+                
+            
+
+                
 
     
 
     # Need to keep log size constant, eliminate the oldest entry when almost full
     for index,entry in enumerate(logs[::-1]):
-         renderText('>'+entry, text_font, words_color, 0.86, (15-index)/25 + 0.185, center=False)
+         renderText('>'+entry, text_font, words_color, 0.76, (15-index)/25 + 0.185, center=False)
 
     if len(logs) > 15:
         del logs[0]
