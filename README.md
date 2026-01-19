@@ -47,8 +47,10 @@ The first character is rendered at (X,Y) = (0.2, (0+1)/25 + 0.195) when i = 0
 
 **Consider the mouse x coordinate obtained when we hover over the first character:**
 
+```python
 mouse_x = L_col_x_start + (j*char_width)
 j = int((mouse_x - L_col_x_start) / char_width)
+```
 
 L_col_x_start = The first X value = 0.2. Every other character is an offset of this value <br>
 j = column value
@@ -58,17 +60,19 @@ Each next character is a char_width from the previous, so a loop can be used to 
 
 **Now consider the mouse y coordinate obtained when we hover over the first character:**
 
-
-mouse_y = L_col_y_start + height*(i/25 + 0.195)<br>
+```python
+mouse_y = L_col_y_start + height*(i/25 + 0.195)
 i = int(25*((mouse_y - L_col_y_start)/(height)) - 0.195)
-
+```
 L_col_y_start = The first Y value = 1/25 + 0.195. Every other character is an offset of this value <br>
 height = the height of the screen. We are using relative pixel values which is why we need to multiply the Y value with height (since that is how the pixel is rendered in this program)
 
 Finally, leaving us with:
 
-row = int(25*((mouse_y - y_start)/(height)) - 0.195)<br>
+```python
+row = int(25*((mouse_y - y_start)/(height)) - 0.195)
 col = int((mouse_x - x_start) / char_width)
+```
 
 For each column i.e left_col_words and right_col_words.
 
