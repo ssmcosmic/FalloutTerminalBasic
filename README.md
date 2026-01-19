@@ -13,7 +13,7 @@ This project is a work-in-progress, and for now, aims to implement the most basi
 <img width="544" height="100" alt="ascii-art-text (2)" src="https://github.com/user-attachments/assets/52e10ab3-6d35-414a-9cda-c94bdf80ab22" />
 
 1) Store the font file (FSEX300.ttf), main.py file and the wordbank.txt in the same folder, along with the backend.py display.py files
-2) Change the folder directory inside main.py to the folder in step 1
+2) Change the folder directory inside main.py to the folder in step 1 (line 14)
 3) Ensure the versions match those below (the program might still work but is not guaranteed)
 4) Run main.py
 
