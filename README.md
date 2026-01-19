@@ -37,8 +37,8 @@ The program displays according to the resolution of the screen, so that resizing
 
 Recall: def renderText(text,font,color,relative_x,relative_y,center = True):
 
-In line 497: <br>
-renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, center=False)
+In line 109: <br>
+d.renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, width, height, screen,center=False)
 
 The first character is rendered at (X,Y) = (0.2, (0+1)/25 + 0.195) when i = 0
 
