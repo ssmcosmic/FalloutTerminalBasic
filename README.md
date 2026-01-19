@@ -29,9 +29,9 @@ The program displays according to the resolution of the screen, so that resizing
 1. Create a rectangle for each column within which mouse inputs are registered
 2. Map each pixel within the rectangle to an index corresponding to the 2D array. It sounds complicated but this is achieved with two lines by doing some smart math:
 
-*i = int(25*((mouse_y - y_start)/(height)) - 0.195) <br>
-*j = int((mouse_x - x_start) / char_width) <br>
-*i,j = row,col
+\*i = int(25*((mouse_y - y_start)/(height)) - 0.195) <br>
+\*j = int((mouse_x - x_start) / char_width) <br>
+\*i,j = row,col
 
 **How is this derived? Within any rectangle, since we are looking at a 2D array, the first character should be at index (0,0) for the relevant column. Consider the pixel positions when the text was rendered in the left column:**
 
