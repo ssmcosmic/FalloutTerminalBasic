@@ -80,7 +80,8 @@ For each column i.e left_col_words and right_col_words.
 1. Add audio (background and when hovering / clicking) <br>
 2. Add a green box over hovered characters and words <br>
 3. Upon finding the correct word, lead to a different screen <br>
-4. Split main.py into a bunch of files for better readability 
+4. Split main.py into a bunch of files for better readability
+5. Add a likeness score for each word clicked on that is not a target
 
 
 
