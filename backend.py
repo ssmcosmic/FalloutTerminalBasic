@@ -26,7 +26,7 @@ def _word_injection(left_col_words,right_col_words, folder_directory, L_word_row
     with open(folder_directory) as file:
         words = [words.strip() for words in file]
         
-    # Generate a random word for a random line. Ensure atleast 10 words generated
+    # Generate a random word for a random line. Ensure atleast 6 words generated
 
     while len(already_injected) < 10:
         for line in range(16):
@@ -344,3 +344,21 @@ def _search_pairs(row,col,word_list,open_brackets, closed_brackets):
             
     return (-1,"NO PAIRS") 
 
+
+
+def _likeness_score(text, target):
+    """
+    Likeness is defined as the number of characters in the selected word that coincide with the exact position of the targer
+    
+    """
+    score = 0
+    for i in range(0,len(text)):
+        if i >= len(target):
+            break
+
+        if text[i] == target[i]:
+            score += 1
+    
+    return score
+
+            
