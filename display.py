@@ -1,3 +1,4 @@
+
 import pygame
 #----------------------------------------------------------------------------------------------------------------------
                                           #Display Methods
@@ -31,4 +32,3 @@ def renderText(text,font,color,relative_x,relative_y, width, height, screen, cen
         text_rect.topleft = (pos_x, pos_y)
         
     screen.blit(text_surface, text_rect)
-
