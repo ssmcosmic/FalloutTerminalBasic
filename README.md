@@ -42,8 +42,10 @@ i, j = row, col
 Recall: def renderText(text,font,color,relative_x,relative_y,center = True):
 
 In line 109: <br>
-d.renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, width, height, screen,center=False)
 
+```python
+d.renderText(left_col_words[i], text_font, words_color, 0.2, (i+1)/25 + 0.195, width, height, screen,center=False)
+```
 The first character is rendered at (X,Y) = (0.2, (0+1)/25 + 0.195) when i = 0
 
 **Consider the mouse x coordinate obtained when we hover over the first character:**
