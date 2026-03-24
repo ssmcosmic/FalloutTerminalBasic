@@ -16,6 +16,7 @@ This project is a work-in-progress, and for now, aims to implement the most basi
 2) Change the folder directory inside main.py to the folder in step 1 (line 14)
 3) Ensure the versions match those below (the program might still work but is not guaranteed)
 4) Run main.py
+5) Alternately, just download and run the .exe file I uploaded (I used pyinstaller to create it).
 
 
 <img width="517" height="100" alt="ascii-art-text (3)" src="https://github.com/user-attachments/assets/4047f478-757b-489f-ac7c-fe665319ec0b" />
@@ -81,7 +82,7 @@ For each column i.e left_col_words and right_col_words.
 2. Add a green box over hovered characters and words <br>
 3. Upon finding the correct word, lead to a different screen <br>
 4. Split main.py into a bunch of files for better readability
-5. Add a likeness score for each word clicked on that is not a target
+
 
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/2a6cc7cc-495d-4dd4-b285-453da6d05a19" />
 
