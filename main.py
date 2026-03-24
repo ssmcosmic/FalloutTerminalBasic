@@ -1,6 +1,29 @@
 import pygame
 import backend as b
 import display as d
+import os
+import sys
+
+#----------------------------------------------------------------------------------------------------------------------
+                                          # Executable Setup
+#----------------------------------------------------------------------------------------------------------------------
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+
+font_path = resource_path("FSEX300.ttf")
+word_bank_path = resource_path("wordbank.txt")
+
+
+
+
+# pyinstaller -w --onefile --upx-dir "C:\Users\ssmco\Downloads\upx-5.1.1-win64\upx-5.1.1-win64" --add-data "FSEX300.ttf;." --add-data "wordbank.txt;." main.py
+
 
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -11,7 +34,7 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 running = True
 width,height = screen.get_size()
-folder_directory = "D:\Coding Projects\Fallout - Revisioned\wordbank.txt" # Change to wherever the wordbank is stored
+folder_directory = word_bank_path
 
 
 # Colors
@@ -25,7 +48,7 @@ glow_surface = pygame.Surface((width,height))
 glow_surface.fill((0,40,0))
 
 # Fonts
-text_font = pygame.font.Font("FSEX300.ttf", int(height*0.04))
+text_font = pygame.font.Font(font_path, int(height*0.04))
 char_width, char_height = text_font.size("A")
 
 # Game stats
@@ -56,6 +79,7 @@ R_col_y_start = height* (1/25 + 0.195)
 
 line_spacing = height/25
 
+# Hitboxes are the size of the entire column grid
 left_hitbox = pygame.Rect(L_col_x_start, L_col_y_start, char_width * 12, line_spacing * 16)
 right_hitbox = pygame.Rect(R_col_x_start, R_col_y_start, char_width * 12, line_spacing * 16)
 
@@ -171,8 +195,13 @@ while running:
                 if display_text in logs:
                     pass
                 else:
-                    if display_text[0].isalpha() == True:
+                    if display_text[0].isalpha() == True:                  
                         logs.append(display_text)
+                        
+                        if(display_text != target):
+                            likeness_score = b._likeness_score(display_text,target)
+                            logs.append("Likeness="+str(likeness_score))
+                        
                         attempts_remaining -= 1
 
                 
@@ -236,8 +265,13 @@ while running:
                 if display_text in logs:
                     pass
                 else:
-                    if display_text[0].isalpha() == True:
+                    if display_text[0].isalpha() == True:                        
                         logs.append(display_text)
+
+                        if(display_text != target):
+                            likeness_score = b._likeness_score(display_text,target)
+                            logs.append("Likeness="+str(likeness_score))
+                        
                         attempts_remaining -= 1
                         
             
